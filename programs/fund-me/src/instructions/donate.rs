@@ -3,7 +3,7 @@ use crate::instructions::init_project::Project;
 use crate::ANCHOR_DISCRIMINATOR_SIZE;
 use anchor_lang::prelude::*;
 
-pub fn donate(ctx: Context<MakeDonation>, amount: u64, _project: String) -> Result<()> {
+pub fn donate(ctx: Context<MakeDonation>, amount: u64, timestamp_pda: i64) -> Result<()> {
     // Check if project deadline has passed
     let clock = Clock::get()?;
     let current_time = clock.unix_timestamp;
@@ -31,15 +31,18 @@ pub fn donate(ctx: Context<MakeDonation>, amount: u64, _project: String) -> Resu
     // Update donation amount
     (&mut ctx.accounts.project).current_amount += amount;
 
-    // Update receipt
+    // Create receipt for refund tracking
     let receipt = &mut ctx.accounts.receipt;
     receipt.user = ctx.accounts.user.key();
     receipt.project = ctx.accounts.project.key();
     receipt.amount = amount;
     receipt.timestamp = current_time;
+    receipt.refunded = false;
     receipt.bump = ctx.bumps.receipt;
 
     msg!("Donation received: {} lamports", amount);
+    msg!("Receipt timestamp account: {}", timestamp_pda);
+    msg!("Transaction timestamp: {}", current_time);
     msg!(
         "Total raised: {}/{}",
         ctx.accounts.project.current_amount,
@@ -50,6 +53,7 @@ pub fn donate(ctx: Context<MakeDonation>, amount: u64, _project: String) -> Resu
 }
 
 #[derive(Accounts)]
+#[instruction(amount: u64, timestamp_pda: i64)]
 pub struct MakeDonation<'info> {
     #[account(mut)]
     pub user: Signer<'info>,
@@ -60,21 +64,27 @@ pub struct MakeDonation<'info> {
     #[account(
         init,
         payer = user,
-        space = ANCHOR_DISCRIMINATOR_SIZE + Donation::INIT_SPACE,
-        seeds = [b"receipt", user.key().as_ref(), project.key().as_ref()],
+        space = ANCHOR_DISCRIMINATOR_SIZE + DonationReceipt::INIT_SPACE,
+        seeds = [
+            b"receipt",
+            user.key().as_ref(),
+            project.key().as_ref(),
+            &timestamp_pda.to_le_bytes()
+        ],
         bump,
     )]
-    pub receipt: Account<'info, Donation>,
+    pub receipt: Account<'info, DonationReceipt>,
 
     pub system_program: Program<'info, System>,
 }
 
 #[account]
 #[derive(InitSpace)]
-pub struct Donation {
+pub struct DonationReceipt {
     pub user: Pubkey,
     pub project: Pubkey,
     pub amount: u64,
     pub timestamp: i64,
+    pub refunded: bool,
     pub bump: u8,
 }

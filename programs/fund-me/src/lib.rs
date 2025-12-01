@@ -23,7 +23,7 @@ pub mod fund_me {
         instructions::init_project::init_project(ctx, project_id, metadata, target_amount, end_time)
     }
 
-    pub fn donate(ctx: Context<MakeDonation>, amount: u64, project: String) -> Result<()> {
-        instructions::donate::donate(ctx, amount, project)
+    pub fn donate(ctx: Context<MakeDonation>, amount: u64, timestamp_pda: i64) -> Result<()> {
+        instructions::donate::donate(ctx, amount, timestamp_pda)
     }
 }
