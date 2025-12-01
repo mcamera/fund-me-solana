@@ -1,5 +1,6 @@
 use anchor_lang::prelude::*;
 
+pub mod errors;
 pub mod instructions;
 
 use instructions::*;
@@ -18,5 +19,9 @@ pub mod fund_me {
         end_time: i64,
     ) -> Result<()> {
         instructions::init_project::init_project(ctx, project_id, metadata, target_amount, end_time)
+    }
+
+    pub fn donate(ctx: Context<MakeDonation>, amount: u64, project: String) -> Result<()> {
+        instructions::donate::donate(ctx, amount, project)
     }
 }

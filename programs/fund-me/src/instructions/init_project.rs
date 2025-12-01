@@ -50,14 +50,14 @@ pub struct InitProject<'info> {
 #[account]
 #[derive(InitSpace)]
 pub struct Project {
-    owner: Pubkey,
+    pub owner: Pubkey,
     #[max_len(32)]
-    project_id: String,
-    metadata: ProjectMetadata,
-    target_amount: u64,
-    current_amount: u64,
-    end_time: i64,
-    bump: u8,
+    pub project_id: String,
+    pub metadata: ProjectMetadata,
+    pub target_amount: u64,
+    pub current_amount: u64,
+    pub end_time: i64,
+    pub bump: u8,
 }
 
 #[derive(InitSpace, AnchorSerialize, AnchorDeserialize, Clone, Debug)]
