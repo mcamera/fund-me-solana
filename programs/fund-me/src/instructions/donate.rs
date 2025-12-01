@@ -1,5 +1,6 @@
 use crate::errors::DonationError;
-use crate::instructions::init_project::{Project, ANCHOR_DISCRIMINATOR_SIZE};
+use crate::instructions::init_project::Project;
+use crate::ANCHOR_DISCRIMINATOR_SIZE;
 use anchor_lang::prelude::*;
 
 pub fn donate(ctx: Context<MakeDonation>, amount: u64, _project: String) -> Result<()> {

@@ -1,6 +1,5 @@
+use crate::ANCHOR_DISCRIMINATOR_SIZE;
 use anchor_lang::prelude::*;
-
-pub const ANCHOR_DISCRIMINATOR_SIZE: usize = 8;
 
 pub fn init_project(
     ctx: Context<InitProject>,

@@ -7,6 +7,8 @@ use instructions::*;
 
 declare_id!("5AacFLpus95hMDvRxUnYuoMrh7dryys2qysiRpiALbxD");
 
+pub const ANCHOR_DISCRIMINATOR_SIZE: usize = 8;
+
 #[program]
 pub mod fund_me {
     use super::*;
